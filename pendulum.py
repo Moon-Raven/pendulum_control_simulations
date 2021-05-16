@@ -12,72 +12,68 @@ class Pendulum:
         self.b = k/m
         self.c = 1/m/l/l
 
-    def set_control_law(self, control_func):
-        """ Control law should have the form u = u(t, x) """
-        self.u = control_func
-
-    def state_space_constant_control(self, t, x, T):
+    def state_space_static_controller(self, t, x, T):
+        """ 
+            T (control law) should have the form T = T(t, x), where:
+            x1 = theta
+            x2 = theta_dot
+        """
         x1 = x[0]
         x2 = x[1]
 
         x1_dot = x2
-        x2_dot = -self.a*sin(x1) - self.b*x2 + self.c*T
+        x2_dot = -self.a*sin(x1) - self.b*x2 + self.c*T(t, x)
 
         x_dot = np.array([x1_dot, x2_dot])
         return x_dot
 
-    def state_space_controlled(self, t, x):
-        x1 = x[0]
-        x2 = x[1]
-
-        T = self.u(t, x)
-        x1_dot = x2
-        x2_dot = -self.a*sin(x1) - self.b*x2 + self.c*T
-
-        x_dot = np.array([x1_dot, x2_dot])
-        return x_dot
-
-    def state_space_shifted(self, t, x, u):
-        x1 = x[0] # x1 = theta - delta
-        x2 = x[1] # x2 = theta_dot
-
-        x1_dot = x2
-        x2_dot = -self.a*(sin(x1+self.delta) - sin(self.delta)) - self.b*x2 + self.c*u
-
-        x_dot = np.array([x1_dot, x2_dot])
-        return x_dot
-
-    def state_space_output_feedback(self, t, z):
-        k1, k2, h1, h2 = 1, 1, -self.b, 1
-        K = np.array([[k1, k2]])
-        H = np.array([[h1], [h2]])
-
-        A = np.array([[0, 1], [-self.a*cos(self.delta), -self.b]])
+    def state_space_observer_controller(self, t, alpha, K, H, delta):
+        A = np.array([[0, 1], [-self.a*cos(delta), -self.b]])
         B = np.array([[0],[self.c]])
         C = np.array([[1, 0]])
 
         # Change variables so equilibrium is at origin
-        z_shifted = z - np.array([self.delta, 0, self.delta, 0])
-        x_shifted = z_shifted[0:2]
-        x_hat_shifted = z_shifted[2:4]
+        variable_offset = np.array([delta, 0])
+        x = alpha[0:2]
+        x_shifted = x - variable_offset
+        x_hat_shifted = alpha[2:4] - variable_offset
 
         # Calculate control based on linearized model and fetch x_dot
-        u = -np.matmul(K, x_hat_shifted)[0]
-        x_dot = self.state_space_shifted(t, x_shifted, u)
+        T_shifted = -np.dot(K, x_hat_shifted)
+        Tss = self.a/self.c * sin(delta);
+        T_func = lambda t, x : Tss + T_shifted
+        x_dot = self.state_space_static_controller(t, x, T_func)
 
         # Calculate observer dynamics
+        K = K[np.newaxis]   # Convert from np array to np matrix
+        H = H[np.newaxis].T # Convert from np array to np matrix
         x_shifted_m = x_shifted[np.newaxis].T
         x_hat_shifted_m = x_hat_shifted[np.newaxis].T
         x_hat_dot = H@C@x_shifted_m + (A-B@K-H@C)@x_hat_shifted_m
         x_hat_dot = x_hat_dot.ravel()
 
-        z_shifted_dot = np.concatenate([x_dot, x_hat_dot])
-        return z_shifted_dot;
+        # Bear in mind that alpha_dot = alpha_shifted dot, becuase derivative
+        # of a constant iz zero
+        alpha_dot = np.concatenate([x_dot, x_hat_dot])
+        return alpha_dot;
 
-    def state_space_integral_control(self, t, alpha):
-        k1, k2, k3 = 1, 1, 1
-        K = np.array([[k1, k2, k3]])
+    def state_space_integral_controller(self, t, alpha, K, delta):
+        # Handle inputs
+        variable_offset = np.array([delta, 0, 0])
+        alpha_shifted = alpha - variable_offset
+        x1 = alpha[0]
+        x2 = alpha[1]
+        x1_shifted = alpha_shifted[0]
+        x2_shifted = alpha_shifted[1]
+        sigma = alpha_shifted[2]
 
-        A = np.array([[0, 1], [-self.a*cos(self.delta), -self.b]])
-        B = np.array([[0],[self.c]])
-        C = np.array([[1, 0]])
+        # Calculate control
+        T_shifted = -np.dot(K, alpha_shifted)
+
+        # Calculate state derivatives
+        x1_dot = x2
+        x2_dot = -self.a*sin(x1) - self.b*x2 + self.c*T_shifted
+        sigma_dot = x1_shifted
+
+        alpha_dot = np.array([x1_dot, x2_dot, sigma_dot])
+        return alpha_dot

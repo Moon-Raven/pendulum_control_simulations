@@ -40,7 +40,7 @@ class Pendulum:
 
         # Calculate control based on linearized model and fetch x_dot
         T_shifted = -np.dot(K, x_hat_shifted)
-        Tss = self.a/self.c * sin(delta);
+        Tss = self.a/self.c * sin(delta)
         T_func = lambda t, x : Tss + T_shifted
         x_dot = self.state_space_static_controller(t, x, T_func)
 
@@ -55,7 +55,7 @@ class Pendulum:
         # Bear in mind that alpha_dot = alpha_shifted dot, becuase derivative
         # of a constant iz zero
         alpha_dot = np.concatenate([x_dot, x_hat_dot])
-        return alpha_dot;
+        return alpha_dot
 
     def state_space_integral_controller(self, t, alpha, K, delta):
         # Handle inputs
@@ -76,4 +76,5 @@ class Pendulum:
         sigma_dot = x1_shifted
 
         alpha_dot = np.array([x1_dot, x2_dot, sigma_dot])
+
         return alpha_dot

@@ -12,6 +12,10 @@ if __name__ == '__main__':
     # fc.main03_feedback_state_stabilization()
     # fc.main04_output_feedback_stabilization()
     # fc.main05_integral_control()
-    gs.main01_fixed_alpha()
+    # gs.main01_fixed_alpha()
+    # gs.main02_gain_scheduling_unmodified()
+    # gs.main03_gain_scheduling_modified()
+    # gs.main04_gain_scheduling_modified_ramp()
+    gs.main05_gain_scheduling_modified_steep_ramp()
 
     print('Program end!')

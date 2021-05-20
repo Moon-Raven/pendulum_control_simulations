@@ -1,5 +1,6 @@
 import feedback_control as fc
 import gain_scheduling as gs
+import tracking as tr
 
 if __name__ == '__main__':
     print('Program start!')
@@ -16,6 +17,13 @@ if __name__ == '__main__':
     # gs.main02_gain_scheduling_unmodified()
     # gs.main03_gain_scheduling_modified()
     # gs.main04_gain_scheduling_modified_ramp()
-    gs.main05_gain_scheduling_modified_steep_ramp()
+    # gs.main05_gain_scheduling_modified_steep_ramp()
+    # tr.main01_reference_model()
+    # tr.main02_pendulum_simple()
+    # tr.main03_pendulum_simple_initial_cond()
+    # tr.main04_pendulum_simple_perturbed()
+    # tr.main05_robot1()
+    # tr.main06_robot2()
+
 
     print('Program end!')

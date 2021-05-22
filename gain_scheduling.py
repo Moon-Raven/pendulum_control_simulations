@@ -236,19 +236,12 @@ def main05_gain_scheduling_modified_steep_ramp():
 
     t,x1,x2,eta,xhat1,xhat2,r,y = simulate_modified(r, alpha, x0, t_start, t_end)
 
-    plt.plot(t, r, 'r--', label = '$r$')
-    plt.plot(t, y, label = '$y$')
-    plt.xlabel('$t$')
-    plt.grid()
-    plt.legend()
-    plt.show()
+    fig, ax = fc.new_figure()
+    ax.plot(t, r, 'r--', label = '$r$')
+    ax.plot(t, y, label = '$y$')
+    ax.set_xlabel('$t$')
+    ax.grid()
+    ax.legend()
 
-    # fig, ax = fc.new_figure()
-    # ax.plot(t, r, 'r--', label = '$r$')
-    # ax.plot(t, y, label = '$y$')
-    # ax.set_xlabel('$t$')
-    # ax.grid()
-    # ax.legend()
-
-    # Path('./figures').mkdir(parents=True, exist_ok=True)
-    # plt.savefig('figures/gain_scheduling_modified_steep_ramp.pdf', pad_inches=0.0)
+    Path('./figures').mkdir(parents=True, exist_ok=True)
+    plt.savefig('figures/gain_scheduling_modified_steep_ramp.pdf', pad_inches=0.0)

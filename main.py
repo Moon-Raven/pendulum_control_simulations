@@ -25,5 +25,4 @@ if __name__ == '__main__':
     # tr.main05_robot1()
     # tr.main06_robot2()
 
-
     print('Program end!')

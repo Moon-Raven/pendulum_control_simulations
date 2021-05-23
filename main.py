@@ -1,6 +1,7 @@
 import feedback_control as fc
 import gain_scheduling as gs
 import tracking as tr
+import sliding_mode_control as smc
 
 if __name__ == '__main__':
     print('Program start!')
@@ -24,5 +25,9 @@ if __name__ == '__main__':
     # tr.main04_pendulum_simple_perturbed()
     # tr.main05_robot1()
     # tr.main06_robot2()
+    # smc.main01_check_matrices()
+    # smc.main02_simulate_fixed_g()
+    # smc.main03_simulate_dynamic_g_small_tau()
+    # smc.main04_simulate_dynamic_g_large_tau()
 
     print('Program end!')

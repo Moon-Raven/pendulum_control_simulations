@@ -13,7 +13,7 @@ class TimeseriesIntegrator:
         if self.last_index == -1:
             raise RuntimeError('Integration called, but sample database empty.')
 
-        integration_t, integration_y = self._get_integration_arrays(span)
+        integration_t, integration_y = self.get_integration_arrays(span)
         res = trapz(integration_y, integration_t)
         return res
 
@@ -29,7 +29,11 @@ class TimeseriesIntegrator:
         self.t[self.last_index] = t
         self.y[self.last_index] = y
 
-    def _get_integration_arrays(self, span):
+    def get_y(self, t):
+        y = np.interp(t, self.t, self.y)
+        return y
+
+    def get_integration_arrays(self, span):
         tleft, tright = span[0], span[1]
         inner_left_index = self._get_inner_left_index(tleft)
         inner_right_index = self._get_inner_right_index(tright)
